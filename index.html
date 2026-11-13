@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=training-film">
+  <script src="app.js?v=training-film" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -42,17 +42,18 @@
         <div class="hero-actions"><a class="button button-dark" href="#request">Request a private session <span aria-hidden="true">↗</span></a><a class="text-link" href="#first-session">How it works <span aria-hidden="true">↓</span></a></div>
         <p class="hero-footnote">Your starting point. Your goals. Your pace.</p>
       </div>
-      <div class="hero-visual">
-        <div class="ring-art" role="img" aria-label="An illustrated red boxing ring corner with the words one coach, your corner and one to one.">
-          <div class="art-grid" aria-hidden="true"></div>
-          <div class="art-top"><span>THE ART OF EIGHT LIMBS</span><span>01 / 01</span></div>
-          <p class="art-title">ONE COACH.<br>YOUR CORNER.</p>
-          <div class="ring-ropes" aria-hidden="true"><div class="rope rope-one"></div><div class="rope rope-two"></div><div class="rope rope-three"></div><div class="ring-post"><span>A1</span></div></div>
-          <div class="one-to-one" aria-hidden="true">1<span>:</span>1</div>
-          <div class="art-bottom"><span>BUILT AROUND YOU.</span><span aria-hidden="true">↗</span></div>
+      <figure class="hero-visual">
+        <div class="training-film">
+          <video id="hero-video" data-src="assets/training-hero.mp4" muted loop playsinline preload="none" poster="assets/training-hero-poster.webp" aria-label="Muay Thai padwork demonstration: a student practising strikes with a trainer." aria-describedby="footage-credit">
+          </video>
+          <div class="film-shade" aria-hidden="true"></div>
+          <div class="film-top"><span class="film-chip"><span aria-hidden="true"></span> THE WORK, UP CLOSE.</span><span class="film-mark" aria-hidden="true">A1</span></div>
+          <div class="film-caption"><p class="film-kicker">PADWORK / ONE TO ONE</p><p class="film-title">ONE COACH.<br>YOUR CORNER.</p><span class="film-detail">Move. Connect. Build on it.</span></div>
+          <div class="film-edge" aria-hidden="true"></div>
         </div>
-        <div class="motion-toolbar"><span>TORONTO, CANADA</span><button type="button" id="motion-toggle" aria-label="Pause hero animation"><span data-motion-icon aria-hidden="true">Ⅱ</span><span data-motion-label>Pause intro</span></button></div>
-      </div>
+        <div class="motion-toolbar"><span class="film-status" data-video-status>SILENT TRAINING FILM</span><button type="button" id="motion-toggle" aria-controls="hero-video" aria-label="Play training footage"><span data-motion-icon aria-hidden="true">▷</span><span data-motion-label>Play footage</span></button></div>
+        <figcaption id="footage-credit" class="footage-credit">Illustrative training footage · <a href="https://www.pexels.com/video/a-woman-doing-muay-thai-with-a-trainer-7987259/" target="_blank" rel="noopener noreferrer">Annushka Ahuja / Pexels<span class="sr-only"> (opens in a new tab)</span></a></figcaption>
+      </figure>
     </section>
 
     <div class="shell"><div class="hero-band"><span>PRIVATE MUAY THAI</span><span>SKILL. CONFIDENCE. CONDITIONING.</span><span>A1 SINCE DAY ONE.</span></div></div>

@@ -27,75 +27,194 @@
   mobileViewport.addEventListener('change', () => closeMenu());
 
   const motionButton = document.getElementById('motion-toggle');
-  const motionLabel = motionButton.querySelector('[data-motion-label]');
-  const motionIcon = motionButton.querySelector('[data-motion-icon]');
-  let heroAnimations = [];
-  let animationRun = 0;
-  let animationState = 'finished';
+  const heroVideo = document.getElementById('hero-video');
 
-  function setMotionState(state) {
-    animationState = state;
-    const settings = {
-      playing: ['Pause intro', 'Ⅱ', 'Pause hero animation'],
-      paused: ['Resume intro', '▷', 'Resume hero animation'],
-      finished: ['Replay intro', '↻', 'Replay hero animation'],
-      reduced: ['Motion off', '—', 'Animation disabled by your reduced-motion preference']
-    }[state];
-    motionLabel.textContent = settings[0];
-    motionIcon.textContent = settings[1];
-    motionButton.setAttribute('aria-label', settings[2]);
-    motionButton.disabled = state === 'reduced';
-  }
+  if (motionButton && heroVideo) {
+    const motionLabel = motionButton.querySelector('[data-motion-label]');
+    const motionIcon = motionButton.querySelector('[data-motion-icon]');
+    const film = document.querySelector('.training-film');
+    const videoStatus = document.querySelector('[data-video-status]');
+    const connection = navigator.connection;
+    let wantsPlayback = !reducedMotion.matches && !connection?.saveData;
+    let videoVisible = true;
+    let pendingPlay = false;
+    let playbackRun = 0;
+    let sourceLoaded = false;
+    let hasPlayed = false;
+    let videoFailed = false;
+    let heroAnimations = [];
+    let introRun = 0;
 
-  function playHero() {
-    const thisRun = ++animationRun;
-    heroAnimations.forEach(animation => animation.cancel());
-    heroAnimations = [];
-    if (reducedMotion.matches || !Element.prototype.animate) {
-      setMotionState('reduced');
-      return;
+    function mayPlay() {
+      return wantsPlayback && videoVisible && !document.hidden && !videoFailed;
     }
-    const add = (element, keyframes, duration, delay = 0) => {
-      const animation = element.animate(keyframes, {
-        duration, delay, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both'
-      });
-      heroAnimations.push(animation);
-    };
-    document.querySelectorAll('[data-hero-word]').forEach((word, index) => {
-      add(word, [{ transform: 'translateY(106%)' }, { transform: 'translateY(0)' }], 720, 70 + index * 130);
-    });
-    add(document.querySelector('.ring-art'), [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], 1080, 80);
-    document.querySelectorAll('.rope').forEach((rope, index) => {
-      add(rope, [{ transform: 'rotate(-17deg) scaleX(0)' }, { transform: 'rotate(-17deg) scaleX(1)' }], 1050, 450 + index * 120);
-    });
-    add(document.querySelector('.art-title'), [{ opacity: 0, transform: 'translateY(15px)' }, { opacity: 1, transform: 'translateY(0)' }], 750, 450);
-    add(document.querySelector('.one-to-one'), [{ opacity: 0, transform: 'translateY(35px)' }, { opacity: 1, transform: 'translateY(0)' }], 1000, 850);
-    setMotionState('playing');
-    Promise.all(heroAnimations.map(animation => animation.finished.catch(() => null))).then(() => {
-      if (thisRun === animationRun && !reducedMotion.matches) {
-        setMotionState('finished');
-        heroAnimations.forEach(animation => animation.cancel());
-        heroAnimations = [];
-      }
-    });
-  }
 
-  motionButton.addEventListener('click', () => {
-    if (animationState === 'playing') {
-      heroAnimations.forEach(animation => animation.pause());
-      setMotionState('paused');
-    } else if (animationState === 'paused') {
-      heroAnimations.forEach(animation => animation.play());
-      setMotionState('playing');
-    } else playHero();
-  });
-  reducedMotion.addEventListener('change', () => {
-    ++animationRun;
-    heroAnimations.forEach(animation => animation.cancel());
-    heroAnimations = [];
-    setMotionState(reducedMotion.matches ? 'reduced' : 'finished');
-  });
-  playHero();
+    function updateMotionControl() {
+      const active = mayPlay() && (pendingPlay || !heroVideo.paused);
+      motionLabel.textContent = videoFailed ? 'Still preview' : active ? 'Pause footage' : hasPlayed ? 'Resume footage' : 'Play footage';
+      motionIcon.textContent = videoFailed ? '—' : active ? 'Ⅱ' : '▷';
+      motionButton.disabled = videoFailed;
+      motionButton.setAttribute('aria-label', videoFailed ? 'Training footage unavailable; still preview shown' : active ? 'Pause training footage and intro' : 'Play training footage');
+      film?.classList.toggle('is-playing', active && !pendingPlay);
+      film?.classList.toggle('is-video-unavailable', videoFailed);
+      if (videoStatus) {
+        videoStatus.textContent = videoFailed ? 'Training footage unavailable. Still preview shown.'
+          : active ? (pendingPlay ? 'Loading training footage…' : 'Training film · sound off')
+          : reducedMotion.matches ? 'Motion paused · play to watch'
+          : connection?.saveData ? 'Data saver on · play to watch'
+          : 'Training film · sound off';
+      }
+    }
+
+    function finishIntro() {
+      ++introRun;
+      heroAnimations.forEach(animation => animation.cancel());
+      heroAnimations = [];
+    }
+
+    function playIntro() {
+      if (reducedMotion.matches || connection?.saveData || !Element.prototype.animate) return;
+      const thisRun = ++introRun;
+      const add = (element, frames, duration, delay = 0) => {
+        if (!element) return;
+        heroAnimations.push(element.animate(frames, {
+          duration, delay, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both'
+        }));
+      };
+      document.querySelectorAll('[data-hero-word]').forEach((word, index) => {
+        add(word, [{ transform: 'translateY(106%)' }, { transform: 'translateY(0)' }], 720, 70 + index * 130);
+      });
+      add(film, [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'translateY(0)' }], 900, 100);
+      add(document.querySelector('.film-title'), [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }], 700, 400);
+      add(document.querySelector('.film-chip'), [{ opacity: 0 }, { opacity: 1 }], 600, 600);
+      Promise.all(heroAnimations.map(animation => animation.finished.catch(() => null))).then(() => {
+        if (thisRun === introRun) finishIntro();
+      });
+    }
+
+    function pausePlayback() {
+      ++playbackRun;
+      pendingPlay = false;
+      heroVideo.pause();
+      updateMotionControl();
+    }
+
+    function syncPlayback() {
+      if (!mayPlay()) {
+        pausePlayback();
+        return;
+      }
+      if (pendingPlay || !heroVideo.paused) {
+        updateMotionControl();
+        return;
+      }
+      if (!sourceLoaded) {
+        heroVideo.querySelectorAll('source[data-src]').forEach(source => {
+          source.src = source.dataset.src;
+        });
+        if (heroVideo.dataset.src) heroVideo.src = heroVideo.dataset.src;
+        sourceLoaded = true;
+        heroVideo.load();
+      }
+      heroVideo.muted = true;
+      heroVideo.defaultMuted = true;
+      heroVideo.playsInline = true;
+      const thisRun = ++playbackRun;
+      pendingPlay = true;
+      updateMotionControl();
+      let playback;
+      try {
+        playback = heroVideo.play();
+      } catch (error) {
+        playback = Promise.reject(error);
+      }
+      Promise.resolve(playback).then(() => {
+        if (thisRun !== playbackRun) {
+          if (!mayPlay()) heroVideo.pause();
+          return;
+        }
+        pendingPlay = false;
+        if (!mayPlay()) {
+          heroVideo.pause();
+        } else {
+          hasPlayed = true;
+        }
+        updateMotionControl();
+      }).catch(() => {
+        if (thisRun !== playbackRun) return;
+        pendingPlay = false;
+        wantsPlayback = false;
+        finishIntro();
+        updateMotionControl();
+      });
+    }
+
+    function showStillPreview() {
+      // Empty, deliberately deferred media can emit an error before loading begins.
+      if (videoFailed || !sourceLoaded) return;
+      videoFailed = true;
+      wantsPlayback = false;
+      pausePlayback();
+      finishIntro();
+      // Reset a failed stream to its poster, including failures after playback began.
+      heroVideo.removeAttribute('src');
+      heroVideo.querySelectorAll('source').forEach(source => source.removeAttribute('src'));
+      heroVideo.load();
+      updateMotionControl();
+    }
+
+    heroVideo.addEventListener('error', showStillPreview);
+    heroVideo.querySelectorAll('source').forEach(source => source.addEventListener('error', showStillPreview));
+    heroVideo.addEventListener('playing', () => {
+      if (!mayPlay()) {
+        heroVideo.pause();
+        return;
+      }
+      hasPlayed = true;
+      pendingPlay = false;
+      updateMotionControl();
+    });
+    heroVideo.addEventListener('pause', updateMotionControl);
+    motionButton.addEventListener('click', () => {
+      if (videoFailed) return;
+      const active = mayPlay() && (pendingPlay || !heroVideo.paused);
+      wantsPlayback = !active;
+      if (wantsPlayback) {
+        heroAnimations.forEach(animation => animation.play());
+      } else {
+        heroAnimations.forEach(animation => animation.pause());
+      }
+      syncPlayback();
+    });
+    reducedMotion.addEventListener('change', () => {
+      finishIntro();
+      if (reducedMotion.matches) wantsPlayback = false;
+      syncPlayback();
+    });
+    connection?.addEventListener?.('change', () => {
+      if (connection.saveData) {
+        wantsPlayback = false;
+        finishIntro();
+      }
+      syncPlayback();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) finishIntro();
+      syncPlayback();
+    });
+    playIntro();
+    if ('IntersectionObserver' in window) {
+      const bounds = (film || heroVideo).getBoundingClientRect();
+      videoVisible = bounds.bottom > 0 && bounds.top < window.innerHeight;
+      const filmObserver = new IntersectionObserver(entries => {
+        videoVisible = entries[0].isIntersecting;
+        if (!videoVisible) finishIntro();
+        syncPlayback();
+      }, { threshold: 0 });
+      filmObserver.observe(film || heroVideo);
+    }
+    syncPlayback();
+  }
 
   const trainingContent = {
     foundations: {
