@@ -227,3 +227,25 @@ p{margin-bottom:20px;}
   .film-title{font-size:42px;}
 }
 @media(max-width:420px){.film-title{font-size:35px;}.film-caption{bottom:21px;}.film-kicker{margin-bottom:9px;}.film-detail{font-size:10px;}}
+
+/* Keep the coach, pads and fighter in the original widescreen frame. */
+.hero{grid-template-columns:.9fr 1.1fr;gap:42px;align-items:center;}
+.hero h1{font-size:clamp(96px,11vw,152px);}
+.hero-visual{width:100%;}
+.training-film{display:flex;flex-direction:column;flex:initial;min-height:0;max-height:none;aspect-ratio:auto;background:var(--ink);}
+.film-top{position:relative;inset:auto;padding:20px 26px;}
+.film-chip{border:0;padding:0;background:none;backdrop-filter:none;}
+.hero-player-stage{position:relative;width:100%;aspect-ratio:16/9;min-height:200px;background:#141815;isolation:isolate;}
+.hero-player-stage iframe,.hero-player-stage #hero-youtube-frame{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.hero-player-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.hero-player-stage.is-ready .hero-player-poster{visibility:hidden;}
+#hero-play-prompt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;padding:16px 22px;min-height:52px;border:1px solid #fff5df80;background:#202522eb;color:var(--cream);font:600 13px var(--body);white-space:nowrap;cursor:pointer;}
+#hero-play-prompt span{font-size:24px;}
+#hero-play-prompt[hidden]{display:none;}
+.hero-player-fallback{position:absolute;bottom:0;left:0;right:0;padding:15px 20px;margin:0;background:#202522ed;color:var(--cream);font-size:12px;}
+.film-caption{position:relative;inset:auto;padding:25px 28px 29px;}
+.film-title{font-size:44px;line-height:.95;}
+.film-caption:after{content:'01 / PRIVATE TRAINING';position:absolute;right:28px;bottom:30px;font-size:9px;letter-spacing:.09em;color:#d6d3c5;writing-mode:vertical-rl;}
+.footage-credit{max-width:100%;font-size:9px;}
+@media(max-width:1100px) and (min-width:761px){.hero{gap:28px;}.hero h1{font-size:11vw;}.film-top{padding:20px;}.film-caption{padding:24px 22px 29px;}.film-title{font-size:38px;}.hero-actions{gap:18px;}}
+@media(max-width:760px){.hero{gap:20px;}.hero h1{font-size:clamp(56px,14.8vw,100px);}.training-film{aspect-ratio:auto;max-height:none;}.film-top{padding:15px 20px;}.film-mark{font-size:26px;}.film-caption{padding:20px 22px 23px;}.film-title{font-size:30px;}.film-title br{display:none;}.film-title br:after{content:' ';}.film-kicker{font-size:8px;margin-bottom:10px;}.film-caption:after{display:none;}.film-detail{font-size:10px;}.film-chip{font-size:8px;}.footage-credit{font-size:8px;}}
