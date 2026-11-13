@@ -58,7 +58,7 @@ p{margin-bottom:20px;}
 .hero-footnote{font-size:11px;letter-spacing:.025em;color:var(--muted);margin:19px 0 0;}
 .hero-visual{display:flex;flex-direction:column;margin:0;min-width:0;}
 .training-film{position:relative;flex:1;min-height:515px;background:#373830;isolation:isolate;overflow:hidden;color:var(--cream);}
-.training-film video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:50% 43%;}
+.training-film video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:50% 50%;}
 .film-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(12,18,15,.43),transparent 25%,transparent 57%,rgba(12,18,15,.72));}
 .film-top{position:absolute;inset:24px 26px auto;display:flex;align-items:center;justify-content:space-between;gap:15px;}
 .film-chip{display:flex;align-items:center;gap:8px;font-size:9px;font-weight:600;letter-spacing:.11em;padding:8px 10px;border:1px solid #fff5df70;background:#20252238;backdrop-filter:blur(5px);}
@@ -209,7 +209,7 @@ p{margin-bottom:20px;}
 
 @media(max-width:1100px){.training-film{min-height:480px;}.film-top{inset:22px 22px auto;}.film-caption{left:24px;right:24px;bottom:25px;}.film-title{font-size:40px;}}
 @media(max-width:900px){.training-film{min-height:470px;}.film-chip{font-size:8px;}.film-mark{font-size:30px;}.film-title{font-size:37px;}}
-@media(max-width:760px){.training-film{flex:auto;min-height:0;aspect-ratio:4/5;max-height:650px;}.training-film video{object-position:50% 45%;}.film-title{font-size:48px;}.film-chip{font-size:9px;}.film-top{inset:23px 24px auto;}.film-caption{left:26px;right:26px;bottom:28px;}.footage-credit{font-size:9px;}.motion-toolbar button{min-height:44px;}}
+@media(max-width:760px){.training-film{flex:auto;min-height:0;aspect-ratio:4/5;max-height:650px;}.training-film video{object-position:50% 50%;}.film-title{font-size:48px;}.film-chip{font-size:9px;}.film-top{inset:23px 24px auto;}.film-caption{left:26px;right:26px;bottom:28px;}.footage-credit{font-size:9px;}.motion-toolbar button{min-height:44px;}}
 @media(max-width:420px){.film-title{font-size:40px;}.film-top{inset:18px 20px auto;}.film-caption{left:22px;right:22px;bottom:23px;}.film-chip{font-size:8px;}.film-mark{font-size:29px;}.film-kicker{font-size:8px;margin-bottom:10px;}.film-detail{font-size:10px;}.footage-credit{font-size:8px;}}
 /* On phones, show the coaching itself immediately after the headline. */
 @media(max-width:760px){
